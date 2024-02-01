@@ -5,15 +5,30 @@ const thirdColumn = document.querySelector("#thirdColumn");
 const keys = document.querySelectorAll(".key");
 const currentPlayer = document.getElementById("currentPlayer");
 
-const divRestart = document.querySelector('#restartButtonConteiner')
+const divRestart = document.querySelector("#restartButtonConteiner");
+const divQuit = document.querySelector("#quitButtonConteiner");
 
-const playerX = document.getElementById('playerXPoints')
-const playerO = document.getElementById('playerOPoints')
+const playerX = document.getElementById("playerXPoints");
+const playerO = document.getElementById("playerOPoints");
+
+
+let playerXName = localStorage.playerXName;
+
+playerXName = playerXName.replace('"', "");
+playerXName = playerXName.replace('"', "");
+
+let playerOName = localStorage.playerOName;
+
+playerOName = playerOName.replace('"', "");
+playerOName = playerOName.replace('"', "");
+
+playerX.innerText = playerXName + ': 0'
+playerO.innerText = playerOName + ': 0'
+currentPlayer.innerText = playerXName;
 
 let playerXTurn = true;
-let playerXPoits = 0
-let playerOPoits = 0
-
+let playerXPoits = 0;
+let playerOPoits = 0;
 
 keys.forEach((key) => {
   key.addEventListener("click", () => {
@@ -26,25 +41,35 @@ function playerTurn(key) {
     key.innerHTML = "X";
     key.dataset.key = "X";
     key.setAttribute("disabled", !key.disabled);
-    currentPlayer.innerText = "Player O";
+    currentPlayer.innerText = playerOName;
     playerXTurn = false;
     victoryCheck();
   } else {
     key.innerHTML = "O";
     key.dataset.key = "O";
     key.setAttribute("disabled", !key.disabled);
-    currentPlayer.innerText = "Player X";
+    currentPlayer.innerText = playerXName;
     playerXTurn = true;
     victoryCheck();
   }
 }
 
-function createRestartButton() {
-  const restartButton = document.createElement("button");
-  restartButton.id = "restartButton";
-  restartButton.innerText = "Reiniciar";
+function poitsCount() {
+  if (playerXTurn) {
+    playerOPoits++;
+    playerO.innerText = playerOName + ": " + playerOPoits;
+  } else {
+    playerXPoits++;
+    playerX.innerText = playerXName + ': ' + playerXPoits
+  }
+}
 
-  divRestart.appendChild(restartButton);
+function createButton(id, innerText) {
+  const button = document.createElement("button");
+  button.id = id;
+  button.innerText = innerText;
+
+  return button;
 }
 
 function restartPlay(e) {
@@ -55,15 +80,28 @@ function restartPlay(e) {
     key.disabled = false;
   });
   if (playerXTurn) {
-    currentPlayer.innerText = "Player: X";
-    playerOPoits++
-    playerO.innerText = `Player O: ${playerOPoits}` 
+    currentPlayer.innerText = playerXName;
   } else {
-    currentPlayer.innerText = "Player: O";
-    playerXPoits++
-    playerX.innerText = `Player X: ${playerXPoits}` 
+    currentPlayer.innerText = playerOName;
   }
   e.target.remove();
+  quitButton.remove()
+}
+
+function quitPlay() {
+  location.href = "./index.html";
+}
+
+function winAnunciation() {
+  if (playerXTurn) {
+    currentPlayer.innerText = `O player: ${playerOName} venceu`;
+  } else {
+    currentPlayer.innerText = `O player: ${playerXName} venceu`;
+  }
+
+  keys.forEach((key) => {
+    key.setAttribute("disabled", !key.disabled);
+  });
 }
 
 function victoryCheck() {
@@ -132,113 +170,138 @@ function victoryCheck() {
     secondColumn.children[2].innerHTML !== "" &&
     thirdColumn.children[0].innerHTML !== "" &&
     thirdColumn.children[1].innerHTML !== "" &&
-    thirdColumn.children[2].innerHTML !== ""
+    thirdColumn.children[2].innerHTML !== "";
 
   if (condition1) {
-    createRestartButton();
-    const restartButton = document.getElementById("restartButton");
+    const createRestartButton = createButton("restartButton", "Reiniciar");
+    divRestart.appendChild(createRestartButton);
+    const createQuitButton = createButton("quitButton", "Sair");
+    divQuit.appendChild(createQuitButton);
 
     firstColumn.children[0].style.backgroundColor = "#A6A867";
     firstColumn.children[1].style.backgroundColor = "#A6A867";
     firstColumn.children[2].style.backgroundColor = "#A6A867";
-    currentPlayer.innerText = `O player: ${firstColumn.children[0].dataset.key} venceu`;
-    keys.forEach((key) => {
-      key.setAttribute("disabled", !key.disabled);
-    });
+
+    poitsCount();
+    winAnunciation();
+
     restartButton.addEventListener("click", restartPlay);
-  }
-  if (condition2) {
-    createRestartButton();
-    const restartButton = document.getElementById("restartButton");
+    quitButton.addEventListener("click", quitPlay);
+
+  } else if (condition2) {
+    const createRestartButton = createButton("restartButton", "Reiniciar");
+    divRestart.appendChild(createRestartButton);
+    const createQuitButton = createButton("quitButton", "Sair");
+    divQuit.appendChild(createQuitButton);
 
     secondColumn.children[0].style.backgroundColor = "#A6A867";
     secondColumn.children[1].style.backgroundColor = "#A6A867";
     secondColumn.children[2].style.backgroundColor = "#A6A867";
-    currentPlayer.innerText = `O player: ${secondColumn.children[0].dataset.key} venceu`;
-    keys.forEach((key) => {
-      key.setAttribute("disabled", !key.disabled);
-    });
+    poitsCount();
+    winAnunciation();
+
     restartButton.addEventListener("click", restartPlay);
+    quitButton.addEventListener("click", quitPlay);
+
   } else if (condition3) {
-    createRestartButton();
-    const restartButton = document.getElementById("restartButton");
+    const createRestartButton = createButton("restartButton", "Reiniciar");
+    divRestart.appendChild(createRestartButton);
+    const createQuitButton = createButton("quitButton", "Sair");
+    divQuit.appendChild(createQuitButton);
 
     thirdColumn.children[0].style.backgroundColor = "#A6A867";
     thirdColumn.children[1].style.backgroundColor = "#A6A867";
     thirdColumn.children[2].style.backgroundColor = "#A6A867";
-    currentPlayer.innerText = `O player: ${thirdColumn.children[0].dataset.key} venceu`;
-    keys.forEach((key) => {
-      key.setAttribute("disabled", !key.disabled);
-    });
+    poitsCount();
+    winAnunciation();
+
     restartButton.addEventListener("click", restartPlay);
+    quitButton.addEventListener("click", quitPlay);
+
   } else if (condition4) {
-    createRestartButton();
-    const restartButton = document.getElementById("restartButton");
+    const createRestartButton = createButton("restartButton", "Reiniciar");
+    divRestart.appendChild(createRestartButton);
+    const createQuitButton = createButton("quitButton", "Sair");
+    divQuit.appendChild(createQuitButton);
 
     firstColumn.children[0].style.backgroundColor = "#A6A867";
     secondColumn.children[1].style.backgroundColor = "#A6A867";
     thirdColumn.children[2].style.backgroundColor = "#A6A867";
-    currentPlayer.innerText = `O player: ${firstColumn.children[0].dataset.key} venceu`;
-    keys.forEach((key) => {
-      key.setAttribute("disabled", !key.disabled);
-    });
+    poitsCount();
+    winAnunciation();
+
     restartButton.addEventListener("click", restartPlay);
+    quitButton.addEventListener("click", quitPlay);
+
   } else if (condition5) {
-    createRestartButton();
-    const restartButton = document.getElementById("restartButton");
+    const createRestartButton = createButton("restartButton", "Reiniciar");
+    divRestart.appendChild(createRestartButton);
+    const createQuitButton = createButton("quitButton", "Sair");
+    divQuit.appendChild(createQuitButton);
 
     firstColumn.children[2].style.backgroundColor = "#A6A867";
     secondColumn.children[1].style.backgroundColor = "#A6A867";
     thirdColumn.children[0].style.backgroundColor = "#A6A867";
-    currentPlayer.innerText = `O player: ${firstColumn.children[2].dataset.key} venceu`;
-    keys.forEach((key) => {
-      key.setAttribute("disabled", !key.disabled);
-    });
+    poitsCount();
+    winAnunciation();
+
     restartButton.addEventListener("click", restartPlay);
+    quitButton.addEventListener("click", quitPlay);
+
   } else if (condition6) {
-    createRestartButton();
-    const restartButton = document.getElementById("restartButton");
+    const createRestartButton = createButton("restartButton", "Reiniciar");
+    divRestart.appendChild(createRestartButton);
+    const createQuitButton = createButton("quitButton", "Sair");
+    divQuit.appendChild(createQuitButton);
 
     firstColumn.children[0].style.backgroundColor = "#A6A867";
     secondColumn.children[0].style.backgroundColor = "#A6A867";
     thirdColumn.children[0].style.backgroundColor = "#A6A867";
-    currentPlayer.innerText = `O player: ${firstColumn.children[0].dataset.key} venceu`;
-    keys.forEach((key) => {
-      key.setAttribute("disabled", !key.disabled);
-    });
+    poitsCount();
+    winAnunciation();
+
     restartButton.addEventListener("click", restartPlay);
+    quitButton.addEventListener("click", quitPlay);
+
   } else if (condition7) {
-    createRestartButton();
-    const restartButton = document.getElementById("restartButton");
+    const createRestartButton = createButton("restartButton", "Reiniciar");
+    divRestart.appendChild(createRestartButton);
+    const createQuitButton = createButton("quitButton", "Sair");
+    divQuit.appendChild(createQuitButton);
 
     firstColumn.children[1].style.backgroundColor = "#A6A867";
     secondColumn.children[1].style.backgroundColor = "#A6A867";
     thirdColumn.children[1].style.backgroundColor = "#A6A867";
-    currentPlayer.innerText = `O player: ${firstColumn.children[1].dataset.key} venceu`;
-    keys.forEach((key) => {
-      key.setAttribute("disabled", !key.disabled);
-    });
+    poitsCount();
+    winAnunciation();
+
     restartButton.addEventListener("click", restartPlay);
+    quitButton.addEventListener("click", quitPlay);
+
   } else if (condition8) {
-    createRestartButton();
-    const restartButton = document.getElementById("restartButton");
+    const createRestartButton = createButton("restartButton", "Reiniciar");
+    divRestart.appendChild(createRestartButton);
+    const createQuitButton = createButton("quitButton", "Sair");
+    divQuit.appendChild(createQuitButton);
 
     firstColumn.children[2].style.backgroundColor = "#A6A867";
     secondColumn.children[2].style.backgroundColor = "#A6A867";
     thirdColumn.children[2].style.backgroundColor = "#A6A867";
-    currentPlayer.innerText = `O player: ${firstColumn.children[2].dataset.key} venceu`;
-    keys.forEach((key) => {
-      key.setAttribute("disabled", !key.disabled);
-    });
+    poitsCount();
+    winAnunciation();
+
     restartButton.addEventListener("click", restartPlay);
+    quitButton.addEventListener("click", quitPlay);
+
   } else if (tieCondition) {
-    createRestartButton();
-    const restartButton = document.getElementById("restartButton");
+    const createRestartButton = createButton("restartButton", "Reiniciar");
+    divRestart.appendChild(createRestartButton);
+    const createQuitButton = createButton("quitButton", "Sair");
+    divQuit.appendChild(createQuitButton);
 
     currentPlayer.innerText = "Empate";
-    keys.forEach((key) => {
-      key.setAttribute("disabled", !key.disabled);
-    });
+
     restartButton.addEventListener("click", restartPlay);
+    quitButton.addEventListener("click", quitPlay);
   }
 }
